@@ -1,0 +1,35 @@
+name: Firmware Dumper
+
+on:
+  workflow_dispatch:
+    inputs:
+      link:
+        description: 'Direct Firmare Link'
+        required: true
+
+env:
+  LINK: ${{ github.event.inputs.link }}
+  TZ: Asia/Kolkata
+
+jobs:
+  Firmware-Dump:
+      runs-on: ubuntu-22.04
+
+      steps:
+      - name: Cleaningup Space
+        uses: rokibhasansagar/slimhub_actions@main         
+
+      - name: Cloning dumpyara
+        run: |
+             git clone --depth=1 https://github.com/neilchetty/Dumpyara dumpyara
+             cd dumpyara
+             sudo apt update -y && sudo apt upgrade -y
+             sudo apt install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack arj cabextract device-tree-compiler liblzma-dev python3-pip brotli liblz4-tool axel gawk aria2 detox cpio rename expect -y
+             sudo pip3 install backports.lzma protobuf pycrypto docopt zstandard twrpdtgen extract-dtb
+
+      - name: Firmware is now going to Dump
+        run: |
+             cd dumpyara
+             touch .tgtoken
+             echo "${{ secrets.TGTOKEN }}" > .tgtoken
+             bash dumpyara.sh $LINK ${{ secrets.GITHUBKEY }}
