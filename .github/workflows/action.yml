@@ -21,7 +21,7 @@ jobs:
 
       - name: Cloning dumpyara
         run: |
-             git clone --depth=1 https://github.com/neilchetty/Dumpyara dumpyara
+             git clone --depth=1 https://github.com/neilchetty/Dumper-Scripts -b Dumpyara dumpyara
              cd dumpyara
              sudo apt update -y && sudo apt upgrade -y
              sudo apt install unace unrar zip unzip p7zip-full p7zip-rar sharutils rar uudeview mpack arj cabextract device-tree-compiler liblzma-dev python3-pip brotli liblz4-tool axel gawk aria2 detox cpio rename expect -y
