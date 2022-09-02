@@ -1,0 +1,33 @@
+name: Dumpyara
+
+on:
+  workflow_dispatch:
+    inputs:
+      link:
+        description: 'Firmware Link'
+        required: true
+
+env:
+  LINK: ${{ github.event.inputs.link }}
+  TZ: Asia/Kolkata
+
+jobs:
+  Firmware-Dump:
+      runs-on: ubuntu-20.04
+
+      steps:
+      - name: Cloning DumprX
+        run: |
+             git clone --depth=1 https://github.com/neilchetty/Dumper-Scripts dumper
+ 
+      - name: Installing Requirements
+        run: |           
+             cd dumper
+             bash setup.sh
+             
+      - name: Firmware is Dumping
+        run: |
+             cd dumper
+             touch .tgtoken
+             echo "${{ secrets.TGTOKEN }}" > .tgtoken
+             bash dumpyara.sh $LINK ${{ secrets.GITHUBKEY }}
