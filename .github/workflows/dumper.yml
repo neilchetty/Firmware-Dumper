@@ -1,4 +1,4 @@
-name: DumprX
+name: Dumper
 
 on:
   workflow_dispatch:
@@ -13,17 +13,21 @@ env:
 
 jobs:
   Firmware-Dump:
-      runs-on: ubuntu-20.04      
+      runs-on: ubuntu-20.04
 
       steps:
-      - name: Cloning DumprX
+
+      - name: Cleanup Space
+        uses: rokibhasansagar/slimhub_actions@main
+
+      - name: Cloning Dumper
         run: |
-             git clone --depth=1 https://github.com/neilchetty/Dumper-Scripts dumper
+             git clone https://github.com/neilchetty/Dumper-Scripts dumper --depth=1
 
       - name: SettingUp SSH Keys
         run: |
              mkdir -p ~/.ssh
-             ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+             ssh-keyscan -t rsa www.opencode.net >> ~/.ssh/known_hosts
              echo "${{ secrets.SSHKEYPRIVATE }}" > ~/.ssh/id_rsa
              echo "${{ secrets.SSHKEYPUBLIC }}" > ~/.ssh/id_rsa.pub
              chmod 600 ~/.ssh/id_rsa
@@ -31,15 +35,19 @@ jobs:
              ssh-agent -s
              eval "$(ssh-agent -s)"
              ssh-add ~/.ssh/id_rsa
- 
+
       - name: Installing Requirements
-        run: |           
+        run: |
              cd dumper
-             bash setup.sh 
+             chmod a+x setup.sh
+             bash setup.sh
 
       - name: Firmware is Dumping
         run: |
              cd dumper
+             chmod a+x dumprx.sh
+             export PUSH_TO_GITLAB=true
+             echo "www.opencode.net" > .gitlab_instance
              echo "Neil-Firmware-Dumps" > .gitlab_group
              echo "${{ secrets.GITLABTOKEN }}" > .gitlab_token
              echo "${{ secrets.TGTOKEN }}" > .tg_token
