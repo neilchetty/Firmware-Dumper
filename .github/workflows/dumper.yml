@@ -1,0 +1,52 @@
+name: Dumper
+
+on:
+  workflow_dispatch:
+    inputs:
+      link:
+        description: 'Firmware Link'
+        required: true
+
+env:
+  LINK: ${{ github.event.inputs.link }}
+  TZ: Asia/Kolkata
+
+jobs:
+  Firmware-Dump:
+      runs-on: ubuntu-22.04
+
+      steps:
+
+      - name: Cleanup Space
+        uses: rokibhasansagar/slimhub_actions@main
+
+      - name: Cloning Dumper
+        run: |
+             git clone https://github.com/neilchetty/Dumper-Scripts dumper --depth=1
+
+      - name: SettingUp SSH Keys
+        run: |
+             mkdir -p ~/.ssh
+             ssh-keyscan -t rsa www.opencode.net >> ~/.ssh/known_hosts
+             echo "${{ secrets.SSHKEYPRIVATE }}" > ~/.ssh/id_rsa
+             echo "${{ secrets.SSHKEYPUBLIC }}" > ~/.ssh/id_rsa.pub
+             chmod 600 ~/.ssh/id_rsa
+             chmod 600 ~/.ssh/id_rsa.pub
+             ssh-agent -s
+             eval "$(ssh-agent -s)"
+             ssh-add ~/.ssh/id_rsa
+
+      - name: Installing Requirements
+        run: |
+             cd dumper
+             bash setup.sh
+
+      - name: Firmware is Dumping
+        run: |
+             cd dumper
+             export PUSH_TO_GITLAB=true
+             echo "www.opencode.net" > .gitlab_instance
+             echo "Neil-Firmware-Dumps" > .gitlab_group
+             echo "${{ secrets.GITLABTOKEN }}" > .gitlab_token
+             echo "${{ secrets.TGTOKEN }}" > .tg_token
+             bash dumper.sh $LINK
