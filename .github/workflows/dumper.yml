@@ -45,8 +45,7 @@ jobs:
         run: |
              cd dumper
              export PUSH_TO_GITLAB=true
-             echo "www.opencode.net" > .gitlab_instance
-             echo "Neil-Firmware-Dumps" > .gitlab_group
+             echo "www.gitlab.com" > .gitlab_instance
+             echo "MiracleDump" > .gitlab_group
              echo "${{ secrets.GITLABTOKEN }}" > .gitlab_token
-             echo "${{ secrets.TGTOKEN }}" > .tg_token
              bash dumper.sh $LINK
