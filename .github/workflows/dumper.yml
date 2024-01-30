@@ -24,18 +24,6 @@ jobs:
         run: |
              git clone https://github.com/neilchetty/Dumper-Scripts dumper --depth=1
 
-      - name: SettingUp SSH Keys
-        run: |
-             mkdir -p ~/.ssh
-             ssh-keyscan -t rsa www.opencode.net >> ~/.ssh/known_hosts
-             echo "${{ secrets.SSHKEYPRIVATE }}" > ~/.ssh/id_rsa
-             echo "${{ secrets.SSHKEYPUBLIC }}" > ~/.ssh/id_rsa.pub
-             chmod 600 ~/.ssh/id_rsa
-             chmod 600 ~/.ssh/id_rsa.pub
-             ssh-agent -s
-             eval "$(ssh-agent -s)"
-             ssh-add ~/.ssh/id_rsa
-
       - name: Installing Requirements
         run: |
              cd dumper
